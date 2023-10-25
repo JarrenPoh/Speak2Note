@@ -1,4 +1,4 @@
-name: renote
+name: Speak2Note
 description: A new Flutter project.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -31,14 +31,35 @@ dependencies:
   flutter:
     sdk: flutter
 
+  firebase_core: 2.16.0
+  cloud_firestore: 4.9.2
+  firebase_storage: 11.2.7
+  #firebase_messaging: 14.6.8
+  #firebase_analytics: 10.5.0
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  #ios sign in
+  firebase_auth: 4.10.0
+  crypto: ^3.0.3
+  sign_in_with_apple: ^5.0.0
+  #
+
+  #
   cupertino_icons: ^1.0.2
   http: ^0.13.5
   permission_handler: ^10.2.0
   path_provider: ^2.0.13
-  record_mp3: ^3.0.0
+  # flutter_audio_recorder: ^0.5.5
+  table_calendar: ^3.0.9
+  get: ^4.6.6
+  speech_to_text: ^6.3.0
+  hidden_drawer_menu: ^3.0.1
+  uuid: ^3.0.7
+  record: ^4.4.4
+  ffmpeg_kit_flutter: ^6.0.3
+  just_audio: ^0.9.35
+  audio_video_progress_bar: ^2.0.1
+  intl: ^0.18.1
+  rxdart: ^0.27.5
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,6 @@
 class WhisperResult {
   String language;
-  List<WhisperiSegment>? segments;
+  List<WhisperSegment>? segments;
   String text;
 
   WhisperResult({
@@ -11,8 +11,8 @@ class WhisperResult {
 
   factory WhisperResult.fromJson(Map<String, dynamic> json) {
     var segmentsJson = json['segments'] as List;
-    List<WhisperiSegment> segments =
-        segmentsJson.map((s) => WhisperiSegment.fromJson(s)).toList();
+    List<WhisperSegment> segments =
+        segmentsJson.map((s) => WhisperSegment.fromJson(s)).toList();
     return WhisperResult(
       text: json['text'],
       language: json['language'],
@@ -21,45 +21,54 @@ class WhisperResult {
   }
 }
 
-class WhisperiSegment {
-  double? avgLogProb;
-  double? compressionRatio;
+class WhisperSegment {
+  // double? avgLogProb;
+  // double? compressionRatio;
   double? end;
   int? id;
-  double? noSpeechProb;
-  int? seek;
+  // double? noSpeechProb;
+  // int? seek;
   double? start;
-  double? temperature;
+  // double? temperature;
   String? text;
-  List<dynamic>? tokens;
+  // List<dynamic>? tokens;
 
-  WhisperiSegment({
-    this.avgLogProb,
-    this.compressionRatio,
+  WhisperSegment({
+    // this.avgLogProb,
+    // this.compressionRatio,
     this.end,
     this.id,
-    this.noSpeechProb,
-    this.seek,
+    // this.noSpeechProb,
+    // this.seek,
     this.start,
-    this.temperature,
+    // this.temperature,
     this.text,
-    this.tokens,
+    // this.tokens,
   });
 
-  factory WhisperiSegment.fromJson(Map<String, dynamic> json) {
-    List<dynamic>? tokensJson =json['tokens'] ?? [];
-    List<dynamic>? tokens =tokensJson!=null? tokensJson.map((t) => t).toList():[];
-    return WhisperiSegment(
-      avgLogProb: json['avg_logprob'] ?? '',
-      compressionRatio: json['compression_ratio'] ?? '',
+  factory WhisperSegment.fromJson(Map<String, dynamic> json) {
+    // List<dynamic>? tokensJson =json['tokens'] ?? [];
+    // List<dynamic>? tokens =tokensJson!=null? tokensJson.map((t) => t).toList():[];
+    return WhisperSegment(
+      // avgLogProb: json['avg_logprob'] ?? '',
+      // compressionRatio: json['compression_ratio'] ?? '',
       end: json['end'] ?? '',
       id: json['id'] ?? '',
-      noSpeechProb: json['no_speech_prob'] ?? '',
-      seek: json['seek'] ?? '',
+      // noSpeechProb: json['no_speech_prob'] ?? '',
+      // seek: json['seek'] ?? '',
       start: json['start'] ?? '',
-      temperature: json['temperature'] ?? '',
+      // temperature: json['temperature'] ?? '',
       text: json['text'] ?? '',
-      tokens: tokens,
+      // tokens: tokens,
     );
+  }
+
+  static Map<String, dynamic> toMap(WhisperSegment segment) {
+    return {
+      "end": segment.end,
+      "id": segment.id,
+      "start": segment.start,
+      "text": segment.text,
+    };
   }
 }
