@@ -44,48 +44,58 @@ class _RecordDetailState extends State<RecordDetail>
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
+          toolbarHeight: Dimensions.height5 * 20,
+          automaticallyImplyLeading: false,
           backgroundColor: Color.fromARGB(255, 86, 86, 86),
-          title: SearchWidget(
-            text: widget.query,
-            hintText: '搜尋你想搜尋的內容',
-            onChanged: (s) {
-              if (s.runes.every((rune) =>
-                      (rune >= 0x4e00 && rune <= 0x9fff) || rune == 0x3002) ||
-                  s == '') {
-                whisperBloc.whisperMotifier.mapChange(
-                  widget.detail.whisperSegments ?? [],
-                  true,
-                  s,
-                );
-              }
-            },
-            autoFocus: false,
-          ),
-        ),
-        body: NestedScrollView(
-          floatHeaderSlivers: true,
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                toolbarHeight: Dimensions.height5 * 8,
-                title: Text(
-                  widget.detail.title,
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(
+                      Icons.navigate_before_rounded,
+                      size: Dimensions.height2 * 20,
+                    ),
+                  ),
+                  SizedBox(width: Dimensions.width5 * 2),
+                  Expanded(
+                    child: SearchWidget(
+                      text: widget.query,
+                      hintText: '搜尋你想搜尋的內容',
+                      onChanged: (s) {
+                        if (s.runes.every((rune) =>
+                                (rune >= 0x4e00 && rune <= 0x9fff) ||
+                                rune == 0x3002) ||
+                            s == '') {
+                          whisperBloc.whisperMotifier.mapChange(
+                            widget.detail.whisperSegments ?? [],
+                            true,
+                            s,
+                          );
+                        }
+                      },
+                      autoFocus: false,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: Dimensions.height2 * 6),
+                child: Text(
+                  widget.detail.time,
                   style: TextStyle(fontSize: Dimensions.height2 * 9),
                 ),
-                automaticallyImplyLeading: false, //隱藏drawer預設icon
-                backgroundColor: Color.fromARGB(255, 86, 86, 86),
-                centerTitle: true,
-                pinned: true,
-                elevation: 0,
               ),
-            ];
-          },
-          body: WhisperArticle(
-            detail: widget.detail,
-            recordListBloc: widget.recordListBloc,
-            whisperBloc: whisperBloc,
-            query: widget.query,
+            ],
           ),
+        ),
+        body: WhisperArticle(
+          detail: widget.detail,
+          recordListBloc: widget.recordListBloc,
+          whisperBloc: whisperBloc,
+          query: widget.query,
         ),
         bottomNavigationBar: Container(
           height: Dimensions.height5 * 30,

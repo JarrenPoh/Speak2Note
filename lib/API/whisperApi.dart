@@ -6,12 +6,12 @@ import 'package:path_provider/path_provider.dart';
 import '../models/whisperMap.dart';
 
 class whisperApi {
-  Future<WhisperResult> uploadMp3(
+  Future<WhisperResult?> convert(
     audioPath,
     String language,
     String RecordingID,
   ) async {
-    audioPath =  await downloadAudioFile(audioPath, RecordingID);
+    audioPath = await downloadAudioFile(audioPath, RecordingID);
 
     String apiKey = whisperApiKey;
     var url = Uri.https("api.openai.com", "/v1/audio/transcriptions");
@@ -23,33 +23,50 @@ class whisperApi {
     request.fields["model"] = "whisper-1";
     request.fields["language"] = language;
     request.fields["response_format"] = "verbose_json";
+
+    var response;
+     var responseBody;
     try {
       request.files.add(await http.MultipartFile.fromPath('file', audioPath));
+      response = await request.send();
+      print('response code: ${response.statusCode}');
+       responseBody = await response.stream.bytesToString();
+      print('responseBody is $responseBody');
     } catch (e) {
       print(e.toString());
     }
-    var response = await request.send();
-    var responseBody = await response.stream.bytesToString();
-    print('responseBody is $responseBody');
-    WhisperResult result = WhisperResult.fromJson(jsonDecode(responseBody));
 
     if (response.statusCode == 200) {
+      WhisperResult result = WhisperResult.fromJson(jsonDecode(responseBody));
+      deleteAudioFile(audioPath);
       return result;
     } else {
-      throw Exception('Failed to upload mp3 file');
+      return null;
     }
   }
 
   Future<String> downloadAudioFile(String audioUrl, String RecordingID) async {
     final response = await http.get(Uri.parse(audioUrl));
     final directory = await getApplicationDocumentsDirectory();
-    final savePath = '${directory.path}/$RecordingID.mp3';
+    final savePath = '${directory.path}/$RecordingID.wav';
     if (response.statusCode == 200) {
       final file = File(savePath);
       await file.writeAsBytes(response.bodyBytes);
+      print('臨時轉文字File created: $savePath');
       return savePath;
     } else {
       throw Exception('Failed to download audio file');
+    }
+  }
+
+  Future<void> deleteAudioFile(String filePath) async {
+    final file = File(filePath);
+
+    if (await file.exists()) {
+      await file.delete();
+      print('臨時轉文字File deleted: $filePath');
+    } else {
+      print('File does not exist: $filePath');
     }
   }
 }

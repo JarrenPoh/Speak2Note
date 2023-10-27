@@ -8,6 +8,7 @@ class RecordingModel {
   String audioUrl;
   List<WhisperSegment>? whisperSegments;
   String recordingID;
+  int duration;
 
   RecordingModel({
     required this.recordAt,
@@ -17,6 +18,7 @@ class RecordingModel {
     required this.audioUrl,
     required this.whisperSegments,
     required this.recordingID,
+    required this.duration,
   });
 
   Map<String, dynamic> toJson() {
@@ -28,6 +30,7 @@ class RecordingModel {
       "audioUrl": audioUrl,
       "whisperSegments": whisperSegments,
       "recordingID": recordingID,
+      "duration":duration,
     };
   }
 
@@ -46,6 +49,7 @@ class RecordingModel {
           ? null
           : list,
       recordingID: map["recordingID"],
+      duration:map["duration"],
     );
   }
 

@@ -1,3 +1,4 @@
+import 'package:Speak2Note/globals/format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Speak2Note/globals/dimension.dart';
@@ -80,13 +81,34 @@ class RecordListState extends State<RecordList> {
                       children: [
                         Text(
                           _list[index].time,
-                          style: TextStyle(color: Colors.grey.shade600),
+                          style: TextStyle(color: Colors.black87),
                           maxLines: 4,
                         ),
                         SizedBox(height: Dimensions.height5),
-                        Text(
-                          _list[index].title == '' ? '無' : _list[index].title,
-                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              _list[index].title == ''
+                                  ? '無'
+                                  : _list[index].title,
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 16),
+                            ),
+                            Expanded(child: Column(children: [])),
+                            Icon(
+                              Icons.timer_outlined,
+                              color: Colors.black38,
+                              size: Dimensions.height2 * 11,
+                            ),
+                            Text(
+                              ' ${secondToTime(_list[index].duration)}',
+                              style: TextStyle(
+                                color: Colors.black38,
+                                fontSize: Dimensions.height2 * 8,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

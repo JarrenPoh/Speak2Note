@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'package:Speak2Note/globals/format.dart';
 import 'package:Speak2Note/valueNotifier/bool_value_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:Speak2Note/API/firebase_api.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:Speak2Note/valueNotifier/var_value_notifier.dart';
 import 'package:uuid/uuid.dart';
@@ -40,7 +42,9 @@ class RecordingPageBloc extends ChangeNotifier {
     DateTime dateTime = DateTime.parse(now.toString());
     time = DateFormat.jm().format(dateTime);
     //mp3開始
-    await _audioRecorder.start();
+    final directory = await getApplicationDocumentsDirectory();
+    final savePath = '${directory.path}/jj${Uuid().v1()}.m4a';
+    await _audioRecorder.start(path: savePath, encoder: AudioEncoder.aacLc);
 
     isRecordingNotifier.value = true;
     startTimer();
@@ -49,14 +53,12 @@ class RecordingPageBloc extends ChangeNotifier {
   void startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       recordTime++;
-      timeNotifier.varChange(formatTime(recordTime));
-      print('${formatTime(recordTime)}');
+      timeNotifier.varChange(secondToTime(recordTime));
     });
   }
 
   Future pauseRecord() async {
     print('停止錄音');
-    recordTime = 0;
     timer?.cancel();
     isRecordingNotifier.value = false;
     String recordingID = const Uuid().v1();
@@ -83,20 +85,8 @@ class RecordingPageBloc extends ChangeNotifier {
       path,
       recordingID,
       uploadListNotifier,
+      recordTime,
     );
+    recordTime = 0;
   }
-}
-
-String formatTime(int totalSeconds) {
-  // 計算小時、分鐘、秒
-  int hours = totalSeconds ~/ 3600;
-  int minutes = (totalSeconds % 3600) ~/ 60;
-  int seconds = totalSeconds % 60;
-
-  // 格式化時間字串
-  String formattedTime = '${hours.toString().padLeft(2, '0')}'
-      ':${minutes.toString().padLeft(2, '0')}'
-      ':${seconds.toString().padLeft(2, '0')}';
-
-  return formattedTime;
 }

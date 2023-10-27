@@ -123,7 +123,7 @@ class _WhisperArticleState extends State<WhisperArticle> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text(
-                  '轉換',
+                  '生成文字',
                   style: TextStyle(color: Colors.black, fontSize: 16),
                 ),
               ),

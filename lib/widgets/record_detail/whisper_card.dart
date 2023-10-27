@@ -1,4 +1,5 @@
 import 'package:Speak2Note/globals/dimension.dart';
+import 'package:Speak2Note/globals/format.dart';
 import 'package:Speak2Note/models/whisperMap.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +45,7 @@ class WhisperCardState extends State<WhisperCard> {
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
-            '# ${widget.segments[widget.index].start?.toStringAsFixed(1)} ~ ${widget.segments[widget.index].end?.toStringAsFixed(1)}',
+            '# ${formatTimeRange(widget.segments[widget.index].start!.toInt(),widget.segments[widget.index].end!.toInt())}',
           ),
         ),
         SizedBox(height: Dimensions.height2),

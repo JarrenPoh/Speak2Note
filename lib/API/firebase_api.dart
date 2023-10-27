@@ -28,6 +28,7 @@ class FirebaseAPI {
     String recordFilePath,
     String recordingID,
     VarValueNotifier uploadListNotifier,
+    int duration,
   ) async {
     try {
       String audioUrl = await uploadAudio(
@@ -46,12 +47,21 @@ class FirebaseAPI {
         audioUrl: audioUrl,
         whisperSegments: [],
         recordingID: recordingID,
+        duration:duration,
       );
       await _firestore
           .collection('recordings')
           .doc(recordingID)
           .set(recording.toJson());
       print('成功上傳firebase_recordings');
+      final file = File(recordFilePath);
+
+    if (await file.exists()) {
+      await file.delete();
+      print('刪除錄音史時的file: $recordFilePath');
+    } else {
+      print('File does not exist: $recordFilePath');
+    }
     } catch (e) {
       throw (e.toString());
     }
@@ -61,9 +71,7 @@ class FirebaseAPI {
       (e) => e['recordingID'] == recordingID,
     );
     uploadListNotifier.varChange(uploadListNotifier.value);
-    print('ad');
     //搜尋剛上傳到firestore的recording
-    print('adw');
     globals.globalRecordList!.currentState!.widget.bloc
         .updateEvent(recordingID);
     Get.snackbar(

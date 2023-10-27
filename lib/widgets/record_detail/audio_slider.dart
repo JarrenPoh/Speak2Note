@@ -1,7 +1,8 @@
 import 'package:Speak2Note/globals/dimension.dart';
 import 'package:Speak2Note/models/positionData_model.dart';
+import 'package:Speak2Note/providers/record_detail/whisper_article_bloc.dart';
+import 'package:Speak2Note/valueNotifier/bool_value_notifier.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:just_audio/just_audio.dart';
@@ -23,6 +24,7 @@ class _AudioSliderState extends State<AudioSlider> {
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
   Duration bufferedPosition = Duration.zero;
+  BoolValueNotifier convertAudioNotifier = BoolValueNotifier(false);
   Stream<PositionData> get _positionDataStream =>
       Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
           audioPlayer.positionStream,
@@ -38,25 +40,11 @@ class _AudioSliderState extends State<AudioSlider> {
   }
 
   Future setAudio() async {
-    // String newPath = widget.audioUrl + '.wav';
-    // await convertMp4ToWav(widget.audioUrl, newPath);
-    audioPlayer.setUrl(widget.audioUrl);
+    String newPath = widget.audioUrl+ '.wav';;
+    await convertMp4ToWav(widget.audioUrl, newPath);
+    audioPlayer.setUrl(newPath);
     audioPlayer.setVolume(10);
-  }
-
-  Future<void> convertMp4ToWav(String inputPath, String outputPath) async {
-    final arguments = [
-      '-i',
-      inputPath,
-      '-ac',
-      '1',
-      '-ar',
-      '16000',
-      '-acodec',
-      'pcm_s16le',
-      outputPath,
-    ];
-    await FFmpegKit.execute(arguments.join(' '));
+    convertAudioNotifier.value = true;
   }
 
   @override
@@ -67,128 +55,137 @@ class _AudioSliderState extends State<AudioSlider> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: Dimensions.width5 * 4,
-        vertical: Dimensions.height5 * 2,
-      ),
-      color: Colors.grey[200],
-      child: Column(
-        children: [
-          StreamBuilder(
-            stream: _positionDataStream,
-            builder: (context, snapshot) {
-              final positionData = snapshot.data;
-              return ProgressBar(
-                barHeight: Dimensions.height2 * 4,
-                baseBarColor: Colors.grey[300],
-                bufferedBarColor: Colors.grey[500],
-                progressBarColor: Color.fromARGB(255, 27, 27, 27),
-                thumbColor: Color.fromARGB(255, 27, 27, 27),
-                timeLabelTextStyle: const TextStyle(
-                  color: Colors.black45,
-                  fontWeight: FontWeight.w600,
+    return ValueListenableBuilder(
+        valueListenable: convertAudioNotifier,
+        builder: (context, value, child) {
+          bool isDone = value;
+          print('isDone: $isDone');
+          return Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: Dimensions.width5 * 4,
+              vertical: Dimensions.height5 * 2,
+            ),
+            color: Colors.grey[200],
+            child: Column(
+              children: [
+                StreamBuilder(
+                  stream: _positionDataStream,
+                  builder: (context, snapshot) {
+                    final positionData = snapshot.data;
+                    return ProgressBar(
+                      barHeight: Dimensions.height2 * 4,
+                      baseBarColor: Colors.grey[300],
+                      bufferedBarColor: Colors.grey[500],
+                      progressBarColor: Color.fromARGB(255, 27, 27, 27),
+                      thumbColor: Color.fromARGB(255, 27, 27, 27),
+                      timeLabelTextStyle: const TextStyle(
+                        color: Colors.black45,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      progress: positionData?.position ?? Duration.zero,
+                      buffered: positionData?.bufferedPosition ?? Duration.zero,
+                      total: positionData?.duration ?? Duration.zero,
+                      onSeek: audioPlayer.seek,
+                    );
+                  },
                 ),
-                progress: positionData?.position ?? Duration.zero,
-                buffered: positionData?.bufferedPosition ?? Duration.zero,
-                total: positionData?.duration ?? Duration.zero,
-                onSeek: audioPlayer.seek,
-              );
-            },
-          ),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              StreamBuilder<PlayerState>(
-                stream:
-                    audioPlayer.playerStateStream, // 将Stream传递给StreamBuilder
-                builder: (context, snapshot) {
-                  final PlayerState = snapshot.data;
-                  final processingState = PlayerState?.processingState;
-                  final playing = PlayerState?.playing;
-                  if (processingState == ProcessingState.loading ||
-                      processingState == ProcessingState.buffering) {
-                    return IconButton(
-                      icon: const CircularProgressIndicator.adaptive(),
-                      iconSize: Dimensions.height2 * 16,
-                      onPressed: () {},
-                    );
-                  } else if (playing != true) {
-                    return IconButton(
-                      icon: const Icon(
-                        Icons.play_arrow_rounded,
-                      ),
-                      iconSize: Dimensions.height5 * 10,
-                      color: Colors.black54,
-                      onPressed: audioPlayer.play,
-                    );
-                  } else if (processingState != ProcessingState.completed) {
-                    return IconButton(
-                      icon: const Icon(
-                        Icons.pause_rounded,
-                      ),
-                      iconSize: Dimensions.height5 * 10,
-                      color: Colors.black54,
-                      onPressed: audioPlayer.pause,
-                    );
-                  } else {
-                    return IconButton(
-                      icon: const Icon(
-                        Icons.replay_rounded,
-                      ),
-                      iconSize: Dimensions.height5 * 10,
-                      color: Colors.black54,
-                      onPressed: () {
-                        audioPlayer.seek(Duration.zero);
-                      },
-                    );
-                  }
-                },
-              ),
-              // Opens speed slider dialog
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.volume_up),
-                    onPressed: () {
-                      showSliderDialog(
-                        context: context,
-                        title: "Adjust volume",
-                        divisions: 10,
-                        min: 0,
-                        max: 100,
-                        value: audioPlayer.volume,
-                        stream: audioPlayer.volumeStream,
-                        onChanged: audioPlayer.setVolume,
-                      );
-                    },
-                  ),
-                  StreamBuilder<double>(
-                    stream: audioPlayer.speedStream,
-                    builder: (context, snapshot) => IconButton(
-                      icon: Text("${snapshot.data?.toStringAsFixed(1)}x",
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                      onPressed: () {
-                        if (snapshot.data == 1.0) {
-                          audioPlayer.setSpeed(1.25);
-                        } else if (snapshot.data == 1.25) {
-                          audioPlayer.setSpeed(1.5);
-                        } else if (snapshot.data == 1.5) {
-                          audioPlayer.setSpeed(0.7);
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    StreamBuilder<PlayerState>(
+                      stream: audioPlayer
+                          .playerStateStream, // 将Stream传递给StreamBuilder
+                      builder: (context, snapshot) {
+                        final PlayerState = snapshot.data;
+                        final processingState = PlayerState?.processingState;
+                        final playing = PlayerState?.playing;
+                        if (processingState == ProcessingState.loading ||
+                            processingState == ProcessingState.buffering ||
+                            isDone != true) {
+                          return IconButton(
+                            icon: const CircularProgressIndicator.adaptive(),
+                            iconSize: Dimensions.height2 * 16,
+                            onPressed: () {},
+                          );
+                        } else if (playing != true) {
+                          return IconButton(
+                            icon: const Icon(
+                              Icons.play_arrow_rounded,
+                            ),
+                            iconSize: Dimensions.height5 * 10,
+                            color: Colors.black54,
+                            onPressed: audioPlayer.play,
+                          );
+                        } else if (processingState !=
+                            ProcessingState.completed) {
+                          return IconButton(
+                            icon: const Icon(
+                              Icons.pause_rounded,
+                            ),
+                            iconSize: Dimensions.height5 * 10,
+                            color: Colors.black54,
+                            onPressed: audioPlayer.pause,
+                          );
                         } else {
-                          audioPlayer.setSpeed(1.0);
+                          return IconButton(
+                            icon: const Icon(
+                              Icons.replay_rounded,
+                            ),
+                            iconSize: Dimensions.height5 * 10,
+                            color: Colors.black54,
+                            onPressed: () {
+                              audioPlayer.seek(Duration.zero);
+                            },
+                          );
                         }
                       },
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+                    // Opens speed slider dialog
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.volume_up),
+                          onPressed: () {
+                            showSliderDialog(
+                              context: context,
+                              title: "Adjust volume",
+                              divisions: 10,
+                              min: 0,
+                              max: 100,
+                              value: audioPlayer.volume,
+                              stream: audioPlayer.volumeStream,
+                              onChanged: audioPlayer.setVolume,
+                            );
+                          },
+                        ),
+                        StreamBuilder<double>(
+                          stream: audioPlayer.speedStream,
+                          builder: (context, snapshot) => IconButton(
+                            icon: Text("${snapshot.data?.toStringAsFixed(1)}x",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                            onPressed: () {
+                              if (snapshot.data == 1.0) {
+                                audioPlayer.setSpeed(1.25);
+                              } else if (snapshot.data == 1.25) {
+                                audioPlayer.setSpeed(1.5);
+                              } else if (snapshot.data == 1.5) {
+                                audioPlayer.setSpeed(0.7);
+                              } else {
+                                audioPlayer.setSpeed(1.0);
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   void showSliderDialog({

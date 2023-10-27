@@ -7,6 +7,7 @@ import 'package:Speak2Note/providers/record_detail/whisper_card_bloc.dart';
 import 'package:Speak2Note/valueNotifier/map_value.notifier.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class WhisperArticleBloc extends ChangeNotifier {
   String language = "zh";
@@ -17,7 +18,7 @@ class WhisperArticleBloc extends ChangeNotifier {
 
   void scrollToHeight(index, cardHeight) {
     double height = 0;
-    height = cardHeight * (index-3);
+    height = cardHeight * (index - 3);
     scrollController.jumpTo(height);
   }
 
@@ -32,15 +33,26 @@ class WhisperArticleBloc extends ChangeNotifier {
     try {
       whisperMotifier.mapChange(null, false, '');
       String newPath = audioPath + '.wav';
-      print('正在轉換m4a為wav檔..');
       await convertMp4ToWav(audioPath, newPath);
       print('正在申請whisperAPI..');
-      whisperResult = await whisperApi().uploadMp3(
+      whisperResult = await whisperApi().convert(
         newPath,
         language,
         recordingID,
       );
-      whisperMotifier.mapChange(whisperResult!.segments, true, '');
+      if (whisperResult == null) {
+        Get.snackbar(
+          '生成失敗',
+          '請再嘗試生成一次，如果仍然錯誤請回報官方',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(
+            seconds: 2,
+          ),
+        );
+        whisperMotifier.mapChange(null, true, '');
+      } else {
+        whisperMotifier.mapChange(whisperResult!.segments, true, '');
+      }
 
       //更新recordList路由的資料
       updateFather(recordingID, recordListBloc, whisperResult!.segments!);
@@ -60,6 +72,7 @@ class WhisperArticleBloc extends ChangeNotifier {
 }
 
 Future<void> convertMp4ToWav(String inputPath, String outputPath) async {
+  print('正在轉換高職音檔');
   final arguments = [
     '-i',
     inputPath,
@@ -72,6 +85,7 @@ Future<void> convertMp4ToWav(String inputPath, String outputPath) async {
     outputPath,
   ];
   await FFmpegKit.execute(arguments.join(' '));
+  print('完成音檔轉換');
 }
 
 //轉換玩whisper後更新首頁
