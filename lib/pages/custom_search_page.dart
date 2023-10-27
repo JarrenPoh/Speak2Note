@@ -124,7 +124,7 @@ class _CustomSearchPageState extends State<CustomSearchPage>
                             horizontal: Dimensions.width5 * 2,
                             vertical: Dimensions.height5),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black12),
+                          border: Border.all(color: Colors.black26),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Column(

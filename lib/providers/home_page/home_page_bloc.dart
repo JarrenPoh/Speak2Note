@@ -9,9 +9,24 @@ class HomePageBloc extends ChangeNotifier {
   DateTime focusedDay = DateTime.now();
   Map<DateTime, List<RecordingModel>> events = {};
   RecordListBloc recordListBloc = RecordListBloc();
+  List list = [];
 
   Future getEvents() async {
-    List list = await FirebaseAPI().fetchAllRecodings();
+    list = await FirebaseAPI().fetchAllRecodings();
+    events = RecordingModel.toEvent(list);
+    eventValueNotifier.eventChange(events);
+    recordListBloc.onDaySelected(
+      events[DateTime.utc(
+        focusedDay.year,
+        focusedDay.month,
+        focusedDay.day,
+      )],
+      true,
+    );
+  }
+
+  Future updateEvent(String recordingID) async {
+    list = await FirebaseAPI().fetchRecording(recordingID, list);
     events = RecordingModel.toEvent(list);
     eventValueNotifier.eventChange(events);
     recordListBloc.onDaySelected(

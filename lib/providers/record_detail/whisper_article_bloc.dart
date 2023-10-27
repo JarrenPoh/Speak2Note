@@ -48,7 +48,7 @@ class WhisperArticleBloc extends ChangeNotifier {
       //     .recordingListChange(list, true);
 
       if (whisperResult != null) {
-        await FirebaseAPI().updateWhisperSegments(
+        await FirebaseAPI().uploadWhisperSegments(
           recordingID,
           whisperResult!.segments!,
         );

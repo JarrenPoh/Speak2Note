@@ -3,12 +3,15 @@ import 'dart:io';
 import 'dart:math';
 import 'package:Speak2Note/models/recording_model.dart';
 import 'package:Speak2Note/models/whisperMap.dart';
+import 'package:Speak2Note/valueNotifier/var_value_notifier.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:Speak2Note/models/user_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:get/get.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:Speak2Note/globals/global_key.dart' as globals;
 
 class FirebaseAPI {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -19,20 +22,31 @@ class FirebaseAPI {
   //上傳recordings
   Future<void> uploadRecordings(
     String title,
+    String time,
     DateTime recordAt,
     String uid,
-    String audioUrl,
+    String recordFilePath,
     String recordingID,
+    VarValueNotifier uploadListNotifier,
   ) async {
-    RecordingModel recording = RecordingModel(
-      title: title,
-      recordAt: recordAt,
-      uid: uid,
-      audioUrl: audioUrl,
-      whisperSegments: [],
-      recordingID: recordingID,
-    );
     try {
+      String audioUrl = await uploadAudio(
+        uid,
+        recordFilePath,
+        recordingID,
+        uploadListNotifier,
+        title,
+        time,
+      );
+      RecordingModel recording = RecordingModel(
+        title: title,
+        time: time,
+        recordAt: recordAt,
+        uid: uid,
+        audioUrl: audioUrl,
+        whisperSegments: [],
+        recordingID: recordingID,
+      );
       await _firestore
           .collection('recordings')
           .doc(recordingID)
@@ -41,6 +55,25 @@ class FirebaseAPI {
     } catch (e) {
       throw (e.toString());
     }
+
+    //刪掉uploadList完成的那個
+    uploadListNotifier.value.removeWhere(
+      (e) => e['recordingID'] == recordingID,
+    );
+    uploadListNotifier.varChange(uploadListNotifier.value);
+    print('ad');
+    //搜尋剛上傳到firestore的recording
+    print('adw');
+    globals.globalRecordList!.currentState!.widget.bloc
+        .updateEvent(recordingID);
+    Get.snackbar(
+      "上傳成功",
+      "錄音文件已成功上傳完成～",
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(
+        seconds: 2,
+      ),
+    );
   }
 
   //上傳音檔
@@ -48,6 +81,9 @@ class FirebaseAPI {
     String uid,
     String recordFilePath,
     String recordingID,
+    VarValueNotifier uploadListNotifier,
+    String title,
+    String time,
   ) async {
     try {
       UploadTask uploadTask = _storage
@@ -56,6 +92,13 @@ class FirebaseAPI {
           .child(uid)
           .child(recordingID)
           .putFile(File(recordFilePath));
+      // 监听上传进度
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        double progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        (uploadListNotifier.value as List).last['uploadProgress'] = progress;
+        uploadListNotifier.varChange(uploadListNotifier.value);
+      });
       TaskSnapshot snap = await uploadTask;
       String downloadUrl = await snap.ref.getDownloadURL();
       return downloadUrl;
@@ -66,7 +109,7 @@ class FirebaseAPI {
   }
 
   //上傳whisper文章
-  Future<void> updateWhisperSegments(
+  Future<void> uploadWhisperSegments(
       String recordingID, List<WhisperSegment> whisperSegments) async {
     List<Map> list = [];
     for (var i in whisperSegments) {
@@ -109,6 +152,33 @@ class FirebaseAPI {
     });
     print('請求firebase_recordings: ${records.length}個');
     return records;
+  }
+
+  //獲取特定的recording
+  Future<List> fetchRecording(
+    String recordingID,
+    List list,
+  ) async {
+    QuerySnapshot snapshot;
+    try {
+      snapshot = await _firestore
+          .collection('recordings')
+          .where('recordingID', isEqualTo: recordingID)
+          .get();
+    } catch (e) {
+      throw (e.toString());
+    }
+    //如果原本就有recordingID就更新，沒有就插入到最後
+    int index = list.indexWhere(
+      (element) => element['recordingID'] == recordingID,
+    );
+    if (index == -1) {
+      list.add(snapshot.docs.first);
+    } else {
+      list[index] = snapshot.docs.first;
+    }
+
+    return list;
   }
 
   //使用者登出

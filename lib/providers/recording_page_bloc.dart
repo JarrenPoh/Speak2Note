@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:Speak2Note/API/firebase_api.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:Speak2Note/valueNotifier/string_value_notifier.dart';
+import 'package:Speak2Note/valueNotifier/var_value_notifier.dart';
 import 'package:uuid/uuid.dart';
 import 'package:record/record.dart';
 
@@ -14,7 +14,9 @@ class RecordingPageBloc extends ChangeNotifier {
   Timer? timer;
   VarValueNotifier timeNotifier = VarValueNotifier('00:00:00');
   BoolValueNotifier isRecordingNotifier = BoolValueNotifier(true);
-  late String title = '';
+  VarValueNotifier uploadListNotifier = VarValueNotifier([]);
+
+  late String time = '';
   final _audioRecorder = Record();
 
   //全區
@@ -28,7 +30,7 @@ class RecordingPageBloc extends ChangeNotifier {
       throw 'Microphone permission not granted';
     }
     timeNotifier.value = '00:00:00';
-    isRecordingNotifier.value = true;
+    isRecordingNotifier.value = false;
     await startRecord();
   }
 
@@ -36,7 +38,7 @@ class RecordingPageBloc extends ChangeNotifier {
     print('開始錄音');
     now = DateTime.now();
     DateTime dateTime = DateTime.parse(now.toString());
-    title = DateFormat.jm().format(dateTime);
+    time = DateFormat.jm().format(dateTime);
     //mp3開始
     await _audioRecorder.start();
 
@@ -57,25 +59,30 @@ class RecordingPageBloc extends ChangeNotifier {
     recordTime = 0;
     timer?.cancel();
     isRecordingNotifier.value = false;
+    String recordingID = const Uuid().v1();
 
     //recorder暫停
     String? path = await _audioRecorder.stop();
     path = path!.replaceAll("file://", "");
+    //update upload List
+    List _list = uploadListNotifier.value;
+    _list.add({
+      "title": '',
+      "time": time,
+      "uploadProgress": 0.0,
+      "recordingID": recordingID,
+    });
+    uploadListNotifier.varChange(_list);
 
     //上傳firestore
-    String recordingID = const Uuid().v1();
-    String audioUrl = await FirebaseAPI().uploadAudio(
+    FirebaseAPI().uploadRecordings(
+      '',
+      time,
+      now,
       FirebaseAuth.instance.currentUser!.uid,
       path,
       recordingID,
-    );
-    isRecordingNotifier.value = false;
-    FirebaseAPI().uploadRecordings(
-      title,
-      now,
-      FirebaseAuth.instance.currentUser!.uid,
-      audioUrl,
-      recordingID,
+      uploadListNotifier,
     );
   }
 }

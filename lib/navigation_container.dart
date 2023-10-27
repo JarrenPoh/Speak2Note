@@ -17,7 +17,10 @@ class _NavigationContainerState extends State<NavigationContainer> {
   @override
   Widget build(BuildContext context) {
     _bloc.pages = [
-      HomePage(bloc: _bloc.homePageBloc),
+      HomePage(
+        bloc: _bloc.homePageBloc,
+        recordingPageBloc: _bloc.recordingPageBloc,
+      ),
       RecordingPage(bloc: _bloc.recordingPageBloc),
     ];
 

@@ -4,19 +4,20 @@ import 'package:Speak2Note/globals/dimension.dart';
 import 'package:Speak2Note/models/recording_model.dart';
 import 'package:Speak2Note/providers/home_page/home_page_bloc.dart';
 import 'package:Speak2Note/widgets/record_detail/record_detail.dart';
+import 'package:Speak2Note/globals/global_key.dart' as globals;
 
 class RecordList extends StatefulWidget {
   final HomePageBloc bloc;
-  const RecordList({
-    super.key,
+  RecordList({
+    Key? key,
     required this.bloc,
-  });
+  }) : super(key: globals.globalRecordList ?? key);
 
   @override
-  State<RecordList> createState() => _RecordListState();
+  State<RecordList> createState() => RecordListState();
 }
 
-class _RecordListState extends State<RecordList> {
+class RecordListState extends State<RecordList> {
   List<RecordingModel> _list = [];
   @override
   void initState() {
@@ -56,7 +57,7 @@ class _RecordListState extends State<RecordList> {
                         builder: (context) => RecordDetail(
                           detail: _list[index],
                           recordListBloc: widget.bloc.recordListBloc,
-                          query:'',
+                          query: '',
                         ),
                       ),
                     );
@@ -71,21 +72,21 @@ class _RecordListState extends State<RecordList> {
                       horizontal: Dimensions.width5 * 0,
                     ),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black12),
+                      border: Border.all(color: Colors.black26),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _list[index].title,
-                          style: TextStyle(color: Colors.black, fontSize: 16),
+                          _list[index].time,
+                          style: TextStyle(color: Colors.grey.shade600),
+                          maxLines: 4,
                         ),
                         SizedBox(height: Dimensions.height5),
                         Text(
-                          '無',
-                          style: TextStyle(color: Colors.grey.shade600),
-                          maxLines: 4,
+                          _list[index].title == '' ? '無' : _list[index].title,
+                          style: TextStyle(color: Colors.black, fontSize: 16),
                         ),
                       ],
                     ),

@@ -20,9 +20,12 @@ class _CustomActionButtonState extends State<CustomActionButton> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      backgroundColor: Colors.blueAccent,
+      backgroundColor:
+          _selectedPage == 0 ? Colors.blueAccent : Colors.redAccent,
       onPressed: !canClick
-          ? () {}
+          ? () {
+              print("cant's click");
+            }
           : () async {
               if (_selectedPage == 0) {
                 setState(() {
@@ -38,8 +41,9 @@ class _CustomActionButtonState extends State<CustomActionButton> {
                 setState(() {
                   canClick = false;
                 });
-                await widget.recordingPageBloc.pauseRecord();
+                widget.recordingPageBloc.pauseRecord();
                 widget.onIconTap(0);
+                await Future.delayed(Duration(milliseconds: 1));
                 setState(() {
                   _selectedPage = 0;
                   canClick = true;

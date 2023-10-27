@@ -2,6 +2,7 @@ import 'package:Speak2Note/models/whisperMap.dart';
 
 class RecordingModel {
   String title;
+  String time;
   DateTime recordAt;
   String uid;
   String audioUrl;
@@ -11,6 +12,7 @@ class RecordingModel {
   RecordingModel({
     required this.recordAt,
     required this.title,
+    required this.time,
     required this.uid,
     required this.audioUrl,
     required this.whisperSegments,
@@ -20,6 +22,7 @@ class RecordingModel {
   Map<String, dynamic> toJson() {
     return {
       "title": title,
+      "time":time,
       "recordAt": recordAt,
       "uid": uid,
       "audioUrl": audioUrl,
@@ -35,6 +38,7 @@ class RecordingModel {
     }
     return RecordingModel(
       recordAt: map['recordAt'].toDate(),
+      time:map['time'],
       title: map["title"],
       uid: map["uid"],
       audioUrl: map["audioUrl"],
