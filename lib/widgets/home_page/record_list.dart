@@ -1,3 +1,4 @@
+import 'package:Speak2Note/API/firebase_api.dart';
 import 'package:Speak2Note/globals/format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -79,10 +80,24 @@ class RecordListState extends State<RecordList> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          _list[index].time,
-                          style: TextStyle(color: Colors.black87),
-                          maxLines: 4,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _list[index].time,
+                              style: TextStyle(color: Colors.black87),
+                              maxLines: 4,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                showPopup(_list[index].recordingID);
+                              },
+                              child: Icon(
+                                Icons.keyboard_control,
+                                color: Colors.black45,
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: Dimensions.height5),
                         Row(
@@ -119,6 +134,141 @@ class RecordListState extends State<RecordList> {
           );
         }
       },
+    );
+  }
+
+  showAlert(String recordingID) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: const Text('刪除錄音'),
+          content: const Text(
+            '點擊確定將永久刪除',
+          ),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              child: const Text(
+                '取消',
+                style: TextStyle(
+                  color: Colors.black26,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text(
+                '刪除',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                FirebaseAPI().deleteRecording(recordingID);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  showEdit(String recordingID) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        TextEditingController controller = TextEditingController();
+        return CupertinoAlertDialog(
+          title: const Text('更改標題'),
+          content: CupertinoTextField(
+            controller: controller,
+            autofocus: true,
+            cursorColor: Color.fromARGB(255, 86, 86, 86),
+            style: TextStyle(color: Color.fromARGB(255, 86, 86, 86)),
+          ),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              child: const Text(
+                '取消',
+                style: TextStyle(
+                  color: Colors.black26,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text(
+                '更改',
+                style: TextStyle(
+                  color: Colors.blueAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                FirebaseAPI().updateTitle(recordingID,controller.text);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  showPopup(String recordingID) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        title: Text('功能選單'),
+        message: Text('如果你還想要我們為您增添其他功能，歡迎聯絡官方'),
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            isDefaultAction: true,
+            onPressed: () {
+              Navigator.pop(context);
+              showEdit(recordingID);
+            },
+            child: const Text(
+              '更改標題',
+              style: TextStyle(
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              showAlert(recordingID);
+            },
+            child: const Text(
+              '刪除',
+              style: TextStyle(
+                color: Colors.redAccent,
+              ),
+            ),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text(
+            '返回',
+            style: TextStyle(
+              color: Colors.black26,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

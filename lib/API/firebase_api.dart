@@ -47,7 +47,7 @@ class FirebaseAPI {
         audioUrl: audioUrl,
         whisperSegments: [],
         recordingID: recordingID,
-        duration:duration,
+        duration: duration,
       );
       await _firestore
           .collection('recordings')
@@ -56,12 +56,12 @@ class FirebaseAPI {
       print('成功上傳firebase_recordings');
       final file = File(recordFilePath);
 
-    if (await file.exists()) {
-      await file.delete();
-      print('刪除錄音史時的file: $recordFilePath');
-    } else {
-      print('File does not exist: $recordFilePath');
-    }
+      if (await file.exists()) {
+        await file.delete();
+        print('刪除錄音史時的file: $recordFilePath');
+      } else {
+        print('File does not exist: $recordFilePath');
+      }
     } catch (e) {
       throw (e.toString());
     }
@@ -187,6 +187,53 @@ class FirebaseAPI {
     }
 
     return list;
+  }
+
+  //更改特定的recording標題
+  Future<void> updateTitle(String recordingID, String title) async {
+    try {
+      await _firestore
+          .collection('recordings')
+          .doc(recordingID)
+          .update({'title': title});
+      Get.snackbar(
+        '更改成功',
+        '成功更改標題',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(
+          seconds: 2,
+        ),
+      );
+      globals.globalRecordList!.currentState!.widget.bloc
+          .updateEvent(recordingID);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  //刪除特定的recording
+  Future<void> deleteRecording(String recordingID) async {
+    try {
+      await _firestore.collection('recordings').doc(recordingID).delete();
+      await _storage
+          .ref()
+          .child('audio')
+          .child(_auth.currentUser!.uid)
+          .child(recordingID)
+          .delete();
+      globals.globalRecordList!.currentState!.widget.bloc
+          .deleteEvent(recordingID);
+      Get.snackbar(
+        '刪除成功',
+        '刪除檔案成功',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(
+          seconds: 2,
+        ),
+      );
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   //使用者登出

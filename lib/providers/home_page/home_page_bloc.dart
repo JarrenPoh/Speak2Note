@@ -38,4 +38,20 @@ class HomePageBloc extends ChangeNotifier {
       true,
     );
   }
+
+  Future deleteEvent(String recordingID) async {
+    events.forEach((date, recordings) {
+      recordings
+          .removeWhere((recording) => recording.recordingID == recordingID);
+    });
+    eventValueNotifier.eventChange(events);
+    recordListBloc.onDaySelected(
+      events[DateTime.utc(
+        focusedDay.year,
+        focusedDay.month,
+        focusedDay.day,
+      )],
+      true,
+    );
+  }
 }
