@@ -24,11 +24,11 @@ class WhisperResult {
 class WhisperSegment {
   // double? avgLogProb;
   // double? compressionRatio;
-  double? end;
+  int end;
   int? id;
   // double? noSpeechProb;
   // int? seek;
-  double? start;
+  int start;
   // double? temperature;
   String? text;
   // List<dynamic>? tokens;
@@ -36,11 +36,11 @@ class WhisperSegment {
   WhisperSegment({
     // this.avgLogProb,
     // this.compressionRatio,
-    this.end,
+    required this.end,
     this.id,
     // this.noSpeechProb,
     // this.seek,
-    this.start,
+    required this.start,
     // this.temperature,
     this.text,
     // this.tokens,
@@ -52,11 +52,11 @@ class WhisperSegment {
     return WhisperSegment(
       // avgLogProb: json['avg_logprob'] ?? '',
       // compressionRatio: json['compression_ratio'] ?? '',
-      end: json['end'] ?? '',
+      end: json['end'].toInt() ?? '',
       id: json['id'] ?? '',
       // noSpeechProb: json['no_speech_prob'] ?? '',
       // seek: json['seek'] ?? '',
-      start: json['start'] ?? '',
+      start: json['start'].toInt() ?? '',
       // temperature: json['temperature'] ?? '',
       text: json['text'] ?? '',
       // tokens: tokens,

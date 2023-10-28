@@ -45,7 +45,7 @@ class WhisperCardState extends State<WhisperCard> {
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
-            '# ${formatTimeRange(widget.segments[widget.index].start!.toInt(),widget.segments[widget.index].end!.toInt())}',
+            '# ${formatTimeRange(widget.segments[widget.index].start.toInt(),widget.segments[widget.index].end.toInt())}',
           ),
         ),
         SizedBox(height: Dimensions.height2),

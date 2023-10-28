@@ -22,25 +22,26 @@ class WhisperArticleBloc extends ChangeNotifier {
     scrollController.jumpTo(height);
   }
 
-  WhisperResult? whisperResult;
+  List<WhisperSegment>? whisperSegments;
   //mp3
   Future<void> callWhisperApi(
-    String audioPath,
+    RecordingModel detail,
     String language,
     String recordingID,
     RecordListBloc recordListBloc,
   ) async {
     try {
       whisperMotifier.mapChange(null, false, '');
-      String newPath = audioPath + '.wav';
-      await convertMp4ToWav(audioPath, newPath);
+      String newPath = detail.audioUrl + '.wav';
+      await convertMp4ToWav(detail.audioUrl, newPath);
       print('正在申請whisperAPI..');
-      whisperResult = await whisperApi().convert(
+      whisperSegments = await whisperApi().convert(
         newPath,
         language,
         recordingID,
+        detail.duration,
       );
-      if (whisperResult == null) {
+      if (whisperSegments == null) {
         Get.snackbar(
           '生成失敗',
           '請再嘗試生成一次，如果仍然錯誤請回報官方',
@@ -51,18 +52,18 @@ class WhisperArticleBloc extends ChangeNotifier {
         );
         whisperMotifier.mapChange(null, true, '');
       } else {
-        whisperMotifier.mapChange(whisperResult!.segments, true, '');
+        whisperMotifier.mapChange(whisperSegments, true, '');
       }
 
       //更新recordList路由的資料
-      updateFather(recordingID, recordListBloc, whisperResult!.segments!);
+      updateFather(recordingID, recordListBloc, whisperSegments!);
       // widget.recordListBloc.recordingListNotifier
       //     .recordingListChange(list, true);
 
-      if (whisperResult != null) {
+      if (whisperSegments != null) {
         await FirebaseAPI().uploadWhisperSegments(
           recordingID,
-          whisperResult!.segments!,
+          whisperSegments!,
         );
       }
     } catch (e) {
@@ -77,7 +78,7 @@ Future<void> convertMp4ToWav(String inputPath, String outputPath) async {
     '-i',
     inputPath,
     '-ac',
-    '1',
+    '2',
     '-ar',
     '16000',
     '-acodec',

@@ -129,7 +129,7 @@ class _WhisperArticleState extends State<WhisperArticle> {
               ),
               onPressed: () async {
                 await widget.whisperBloc.callWhisperApi(
-                  widget.detail.audioUrl,
+                  widget.detail,
                   widget.whisperBloc.language,
                   widget.detail.recordingID,
                   widget.recordListBloc,
