@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:Speak2Note/hidden_drawer_screen.dart';
 import 'package:Speak2Note/pages/login_page.dart';
+import 'package:permission_handler/permission_handler.dart';
 // import 'package:Speak2Note/globals/global_key.dart' as globals;
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  Permission.microphone.request();
   runApp(const MyApp());
 }
 
