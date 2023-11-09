@@ -30,7 +30,7 @@ class _CustomActionButtonState extends State<CustomActionButton> {
               print("cant's click");
             }
           : () async {
-              var microphoneStatus = await Permission.photos.status;
+              var microphoneStatus = await Permission.microphone.status;
               print('mircrophone statue: ${microphoneStatus}');
               if (microphoneStatus.isGranted) {
                 if (_selectedPage == 0) {

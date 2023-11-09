@@ -23,43 +23,60 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
 
   @override
   Widget build(BuildContext context) {
+    Color hintColor = Theme.of(context).hintColor;
+    Color onSecondaryColor = Theme.of(context).colorScheme.onSecondary;
+    Color firstColor = Theme.of(context).colorScheme.primary;
+    Color secondColor = Theme.of(context).colorScheme.secondary;
+    Color thirdColor = Theme.of(context).colorScheme.tertiary;
+    Color containerColor = Theme.of(context).colorScheme.primaryContainer;
     return ValueListenableBuilder(
       valueListenable: widget.bloc.eventValueNotifier,
       builder: (context, value, child) {
         value as Map<DateTime, List<RecordingModel>>?;
         return TableCalendar(
           eventLoader: (day) => value?[day] ?? [],
-          headerStyle: const HeaderStyle(
+          headerStyle: HeaderStyle(
             formatButtonVisible: false,
             titleCentered: true,
             leftChevronIcon: Icon(
               Icons.chevron_left_rounded,
-              color: Colors.blueAccent,
+              color: hintColor,
             ),
+            titleTextStyle: TextStyle(color: onSecondaryColor),
             rightChevronIcon: Icon(
               Icons.chevron_right_rounded,
-              color: Colors.blueAccent,
+              color: hintColor,
             ),
           ),
+          daysOfWeekStyle: DaysOfWeekStyle(
+            decoration: BoxDecoration(),
+            weekdayStyle: TextStyle(color: firstColor),
+            weekendStyle: TextStyle(color: secondColor),
+          ),
+          daysOfWeekHeight: Dimensions.height2*25,
           calendarStyle: CalendarStyle(
-            cellAlignment: Alignment.topCenter,
-            cellMargin: EdgeInsets.all(Dimensions.height2 / 2),
-            cellPadding: EdgeInsets.all(Dimensions.height2 * 2),
-            todayDecoration: BoxDecoration(
-              color: Colors.black38,
-              borderRadius: BorderRadius.circular(50),
-            ),
-            selectedDecoration: BoxDecoration(
-              color: Colors.black45,
-            ),
-            weekendDecoration: BoxDecoration(
-              color: Colors.black12,
-              border: Border.all(color: Colors.black54, width: 0.5),
-            ),
-            defaultDecoration: BoxDecoration(
-              border: Border.all(color: Colors.black54, width: 0.5),
-            ),
-          ),
+              cellAlignment: Alignment.topCenter,
+              cellMargin: EdgeInsets.all(Dimensions.height2 / 2),
+              cellPadding: EdgeInsets.all(Dimensions.height2 * 2),
+              // outsideTextStyle: TextStyle(color: onSecondaryColor),
+              todayDecoration: BoxDecoration(
+                color: secondColor,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              todayTextStyle: TextStyle(),
+              selectedDecoration: BoxDecoration(
+                color: firstColor,
+              ),
+              selectedTextStyle: TextStyle(),
+              weekendDecoration: BoxDecoration(
+                color: thirdColor,
+                border: Border.all(color: firstColor, width: 0.5),
+              ),
+              weekendTextStyle: TextStyle(),
+              defaultDecoration: BoxDecoration(
+                border: Border.all(color: firstColor, width: 0.5),
+              ),
+              defaultTextStyle: TextStyle(color: onSecondaryColor)),
           availableGestures: AvailableGestures.all,
           selectedDayPredicate: (day) => isSameDay(day, widget.bloc.focusedDay),
           focusedDay: widget.bloc.focusedDay,
@@ -84,11 +101,11 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(2),
-                            color: Colors.white60,
+                            color: containerColor,
                           ),
                           child: Text(
                             '(${events.length})',
-                            style: const TextStyle(color: Colors.blueAccent),
+                            style: TextStyle(color: hintColor),
                           ),
                         ),
                       ],

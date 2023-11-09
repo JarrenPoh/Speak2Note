@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:Speak2Note/globals/dimension.dart';
 import 'package:Speak2Note/providers/recording_page_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class RecordingPage extends StatefulWidget {
   final RecordingPageBloc bloc;
@@ -27,9 +28,12 @@ class _RecordingPageState extends State<RecordingPage> {
 
   @override
   Widget build(BuildContext context) {
+    Color appBarColor = Theme.of(context).appBarTheme.backgroundColor!;
+    Color firstColor = Theme.of(context).colorScheme.primary;
+    Color onSecondaryColor = Theme.of(context).colorScheme.onSecondary;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 86, 86, 86),
+        backgroundColor: appBarColor,
         elevation: 0,
         title: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -38,7 +42,10 @@ class _RecordingPageState extends State<RecordingPage> {
               valueListenable: widget.bloc.timeNotifier,
               builder: (context, value, child) {
                 value as String;
-                return Text(value);
+                return Text(
+                  value,
+                  style: TextStyle(color: onSecondaryColor),
+                );
               },
             ),
           ],
@@ -53,7 +60,10 @@ class _RecordingPageState extends State<RecordingPage> {
           return Center(
             child: !_isRecording
                 ? CircularProgressIndicator.adaptive()
-                : Text('錄音中'),
+                : LoadingAnimationWidget.newtonCradle(
+                    color: firstColor,
+                    size: Dimensions.height5 * 20,
+                  ),
           );
         },
       ),

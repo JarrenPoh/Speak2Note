@@ -30,8 +30,10 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
   @override
   Widget build(BuildContext context) {
+    Color scaffoldBackgroundColor = Theme.of(context).scaffoldBackgroundColor;
     super.build(context);
     return Scaffold(
+      backgroundColor: scaffoldBackgroundColor,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return <Widget>[

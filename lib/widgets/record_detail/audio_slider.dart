@@ -40,7 +40,8 @@ class _AudioSliderState extends State<AudioSlider> {
   }
 
   Future setAudio() async {
-    String newPath = widget.audioUrl+ '.wav';;
+    String newPath = widget.audioUrl + '.wav';
+    ;
     await convertMp4ToWav(widget.audioUrl, newPath);
     audioPlayer.setUrl(newPath);
     audioPlayer.setVolume(10);
@@ -55,6 +56,10 @@ class _AudioSliderState extends State<AudioSlider> {
 
   @override
   Widget build(BuildContext context) {
+    Color onPrimary = Theme.of(context).colorScheme.onPrimary;
+    Color firstColor = Theme.of(context).colorScheme.primary;
+    Color onSecondaryColor = Theme.of(context).colorScheme.onSecondary;
+
     return ValueListenableBuilder(
         valueListenable: convertAudioNotifier,
         builder: (context, value, child) {
@@ -65,7 +70,7 @@ class _AudioSliderState extends State<AudioSlider> {
               horizontal: Dimensions.width5 * 4,
               vertical: Dimensions.height5 * 2,
             ),
-            color: Colors.grey[200],
+            color: onPrimary,
             child: Column(
               children: [
                 StreamBuilder(
@@ -76,10 +81,10 @@ class _AudioSliderState extends State<AudioSlider> {
                       barHeight: Dimensions.height2 * 4,
                       baseBarColor: Colors.grey[300],
                       bufferedBarColor: Colors.grey[500],
-                      progressBarColor: Color.fromARGB(255, 27, 27, 27),
-                      thumbColor: Color.fromARGB(255, 27, 27, 27),
-                      timeLabelTextStyle: const TextStyle(
-                        color: Colors.black45,
+                      progressBarColor: firstColor,
+                      thumbColor: firstColor,
+                      timeLabelTextStyle: TextStyle(
+                        color: firstColor,
                         fontWeight: FontWeight.w600,
                       ),
                       progress: positionData?.position ?? Duration.zero,
@@ -113,7 +118,7 @@ class _AudioSliderState extends State<AudioSlider> {
                               Icons.play_arrow_rounded,
                             ),
                             iconSize: Dimensions.height5 * 10,
-                            color: Colors.black54,
+                            color: onSecondaryColor,
                             onPressed: audioPlayer.play,
                           );
                         } else if (processingState !=
@@ -123,7 +128,7 @@ class _AudioSliderState extends State<AudioSlider> {
                               Icons.pause_rounded,
                             ),
                             iconSize: Dimensions.height5 * 10,
-                            color: Colors.black54,
+                            color: onSecondaryColor,
                             onPressed: audioPlayer.pause,
                           );
                         } else {
@@ -132,7 +137,7 @@ class _AudioSliderState extends State<AudioSlider> {
                               Icons.replay_rounded,
                             ),
                             iconSize: Dimensions.height5 * 10,
-                            color: Colors.black54,
+                            color: onSecondaryColor,
                             onPressed: () {
                               audioPlayer.seek(Duration.zero);
                             },
@@ -145,7 +150,10 @@ class _AudioSliderState extends State<AudioSlider> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.volume_up),
+                          icon: Icon(
+                            Icons.volume_up,
+                            color: onSecondaryColor,
+                          ),
                           onPressed: () {
                             showSliderDialog(
                               context: context,
@@ -162,9 +170,13 @@ class _AudioSliderState extends State<AudioSlider> {
                         StreamBuilder<double>(
                           stream: audioPlayer.speedStream,
                           builder: (context, snapshot) => IconButton(
-                            icon: Text("${snapshot.data?.toStringAsFixed(1)}x",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
+                            icon: Text(
+                              "${snapshot.data?.toStringAsFixed(1)}x",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: onSecondaryColor,
+                              ),
+                            ),
                             onPressed: () {
                               if (snapshot.data == 1.0) {
                                 audioPlayer.setSpeed(1.25);

@@ -54,6 +54,7 @@ class RecordingPageBloc extends ChangeNotifier {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       recordTime++;
       timeNotifier.varChange(secondToTime(recordTime));
+      print(recordTime);
     });
   }
 

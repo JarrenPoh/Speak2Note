@@ -13,9 +13,10 @@ class CustomSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color appBarColor = Theme.of(context).appBarTheme.backgroundColor!;
     return SliverAppBar(
       automaticallyImplyLeading: false, //隱藏drawer預設icon
-      backgroundColor: Color.fromARGB(255, 86, 86, 86),
+      backgroundColor: appBarColor,
       expandedHeight: Dimensions.height5 * 14,
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
@@ -51,7 +52,7 @@ class CustomSearchBar extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.search_outlined,
-                    color: Color.fromARGB(255, 86, 86, 86),
+                    color: appBarColor,
                     size: Dimensions.height5 * 5,
                   ),
                   SizedBox(width: Dimensions.width5 * 3),

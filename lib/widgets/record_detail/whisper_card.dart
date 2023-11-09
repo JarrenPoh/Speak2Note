@@ -31,6 +31,10 @@ class WhisperCardState extends State<WhisperCard> {
 
   @override
   Widget build(BuildContext context) {
+    Color firstColor = Theme.of(context).colorScheme.primary;
+    Color onSecondaryColor = Theme.of(context).colorScheme.onSecondary;
+    Color thirdColor = Theme.of(context).colorScheme.tertiary;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -41,64 +45,26 @@ class WhisperCardState extends State<WhisperCard> {
             vertical: Dimensions.height2,
           ),
           decoration: BoxDecoration(
-            color: Colors.black45.withOpacity(0.25),
+            color: firstColor.withOpacity(0.25),
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
-            '# ${formatTimeRange(widget.segments[widget.index].start.toInt(),widget.segments[widget.index].end.toInt())}',
+            '# ${formatTimeRange(widget.segments[widget.index].start.toInt(), widget.segments[widget.index].end.toInt())}',
+            style: TextStyle(color: firstColor),
           ),
         ),
         SizedBox(height: Dimensions.height2),
         RichText(
           text: TextSpan(
-            style: TextStyle(fontSize: 15),
+            style: TextStyle(fontSize: 15,color: onSecondaryColor),
             children: widget.textSpans,
           ),
         ),
         SizedBox(height: Dimensions.height5),
-        Divider(),
+        Divider(color: thirdColor),
       ],
     );
   }
 
-  List<TextSpan> miggrateTextspan(
-    String text,
-    String query,
-  ) {
-    int index = text.indexOf(query);
-    List<TextSpan> textSpans = [];
-
-    if (index != -1) {
-      textSpans.add(
-        TextSpan(
-          text: text.substring(0, index),
-          style: TextStyle(color: Colors.black),
-        ),
-      );
-      textSpans.add(
-        TextSpan(
-          text: query,
-          style: TextStyle(
-            backgroundColor: Colors.blueAccent.withOpacity(0.5),
-            color: Colors.black,
-          ),
-        ),
-      );
-      textSpans.add(
-        TextSpan(
-          text: text.substring(index + query.length),
-          style: TextStyle(color: Colors.black),
-        ),
-      );
-    } else {
-      // If query is not found in text, display the entire text as white.
-      textSpans.add(
-        TextSpan(
-          text: text,
-          style: TextStyle(color: Colors.black),
-        ),
-      );
-    }
-    return textSpans;
-  }
+  
 }

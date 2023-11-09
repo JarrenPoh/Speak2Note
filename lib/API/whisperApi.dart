@@ -20,7 +20,7 @@ class whisperApi {
 
     var response;
     var responseBody;
-    int splitIntervalSeconds = 600; //10 min
+    int splitIntervalSeconds = 360; //6 min
     final numSplits = (totalDuration / splitIntervalSeconds).ceil();
     final directory = await getApplicationDocumentsDirectory();
     String _path = directory.path;

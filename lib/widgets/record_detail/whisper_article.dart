@@ -52,6 +52,8 @@ class _WhisperArticleState extends State<WhisperArticle> {
 
   @override
   Widget build(BuildContext context) {
+    Color secondColor = Theme.of(context).colorScheme.secondary;
+    Color onPrimary = Theme.of(context).colorScheme.onPrimary;
     return ValueListenableBuilder(
       valueListenable: widget.whisperBloc.whisperMotifier,
       builder: (context, value, child) {
@@ -119,12 +121,12 @@ class _WhisperArticleState extends State<WhisperArticle> {
                   vertical: Dimensions.height5 * 2,
                 ),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black26),
+                  border: Border.all(color: secondColor),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Text(
+                child: Text(
                   '生成文字',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
+                  style: TextStyle(color: onPrimary, fontSize: 16),
                 ),
               ),
               onPressed: () async {
@@ -147,6 +149,7 @@ class _WhisperArticleState extends State<WhisperArticle> {
     String text,
     String query,
   ) {
+    Color onSecondaryColor = Theme.of(context).colorScheme.onSecondary;
     int i = text.indexOf(query);
     List<TextSpan> textSpans = [];
 
@@ -154,7 +157,7 @@ class _WhisperArticleState extends State<WhisperArticle> {
       textSpans.add(
         TextSpan(
           text: text.substring(0, i),
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: onSecondaryColor),
         ),
       );
       textSpans.add(
@@ -162,14 +165,14 @@ class _WhisperArticleState extends State<WhisperArticle> {
           text: query,
           style: TextStyle(
             backgroundColor: Colors.blueAccent.withOpacity(0.5),
-            color: Colors.black,
+            color: onSecondaryColor,
           ),
         ),
       );
       textSpans.add(
         TextSpan(
           text: text.substring(i + query.length),
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: onSecondaryColor),
         ),
       );
     } else {
@@ -177,7 +180,7 @@ class _WhisperArticleState extends State<WhisperArticle> {
       textSpans.add(
         TextSpan(
           text: text,
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: onSecondaryColor),
         ),
       );
     }

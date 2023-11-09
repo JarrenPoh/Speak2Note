@@ -1,3 +1,5 @@
+import 'package:Speak2Note/globals/dark_theme.dart';
+import 'package:Speak2Note/globals/light_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 // import 'package:Speak2Note/globals/global_key.dart' as globals;
 
 Future<void> main() async {
+  await Future.delayed(Duration(seconds: 2));
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   Permission.microphone.request();
@@ -21,14 +24,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.black54,
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.light(),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.black54,
-        ),
-      ),
+      theme: lightTheme,
+      darkTheme: darkTheme,
       // navigatorKey:  globals.appNavigator,
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),

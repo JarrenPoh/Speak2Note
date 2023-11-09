@@ -17,6 +17,9 @@ class UploadList extends StatefulWidget {
 class _UploadListState extends State<UploadList> {
   @override
   Widget build(BuildContext context) {
+    Color hintColor = Theme.of(context).hintColor;
+    Color onSecondaryColor = Theme.of(context).colorScheme.onSecondary;
+    // Color secondColor = Theme.of(context).colorScheme.secondary;
     return ValueListenableBuilder(
       valueListenable: widget.bloc.uploadListNotifier,
       builder: (context, value, child) {
@@ -40,7 +43,8 @@ class _UploadListState extends State<UploadList> {
                         ),
                         decoration: BoxDecoration(
                           border: Border.all(
-                              color: const Color.fromARGB(31, 75, 75, 75)),
+                            color: onSecondaryColor.withOpacity(0.11),
+                          ),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Row(
@@ -52,7 +56,7 @@ class _UploadListState extends State<UploadList> {
                                 Text(
                                   value[index]['time'],
                                   style: TextStyle(
-                                    color: Colors.black26,
+                                    color: onSecondaryColor.withOpacity(0.26),
                                   ),
                                   maxLines: 4,
                                 ),
@@ -62,14 +66,16 @@ class _UploadListState extends State<UploadList> {
                                       ? '無'
                                       : value[index]['title'],
                                   style: TextStyle(
-                                      color: Colors.black26, fontSize: 16),
+                                    color: onSecondaryColor.withOpacity(0.26),
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ],
                             ),
                             Text(
                               '上傳進度${value[index]['uploadProgress'].toInt()}%',
                               style: TextStyle(
-                                color: Colors.blueAccent,
+                                color: hintColor,
                                 fontSize: 15,
                               ),
                             ),

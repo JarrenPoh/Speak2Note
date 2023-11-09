@@ -35,6 +35,9 @@ class RecordListState extends State<RecordList> {
 
   @override
   Widget build(BuildContext context) {
+    Color onSecondaryColor = Theme.of(context).colorScheme.onSecondary;
+    Color firstColor = Theme.of(context).colorScheme.primary;
+    Color secondColor = Theme.of(context).colorScheme.secondary;
     return ValueListenableBuilder(
       valueListenable: widget.bloc.recordListBloc.recordingListNotifier,
       builder: (context, value, child) {
@@ -74,7 +77,7 @@ class RecordListState extends State<RecordList> {
                       horizontal: Dimensions.width5 * 0,
                     ),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black26),
+                      border: Border.all(color: secondColor),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(
@@ -85,7 +88,7 @@ class RecordListState extends State<RecordList> {
                           children: [
                             Text(
                               _list[index].time,
-                              style: TextStyle(color: Colors.black87),
+                              style: TextStyle(color: onSecondaryColor),
                               maxLines: 4,
                             ),
                             GestureDetector(
@@ -94,7 +97,7 @@ class RecordListState extends State<RecordList> {
                               },
                               child: Icon(
                                 Icons.keyboard_control,
-                                color: Colors.black45,
+                                color: firstColor,
                               ),
                             ),
                           ],
@@ -107,19 +110,19 @@ class RecordListState extends State<RecordList> {
                               _list[index].title == ''
                                   ? '無'
                                   : _list[index].title,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
+                              style: TextStyle(
+                                  color: onSecondaryColor, fontSize: 16),
                             ),
                             Expanded(child: Column(children: [])),
                             Icon(
                               Icons.timer_outlined,
-                              color: Colors.black38,
+                              color: secondColor,
                               size: Dimensions.height2 * 11,
                             ),
                             Text(
                               ' ${secondToTime(_list[index].duration)}',
                               style: TextStyle(
-                                color: Colors.black38,
+                                color: secondColor,
                                 fontSize: Dimensions.height2 * 8,
                               ),
                             ),
@@ -213,7 +216,7 @@ class RecordListState extends State<RecordList> {
                 ),
               ),
               onPressed: () {
-                FirebaseAPI().updateTitle(recordingID,controller.text);
+                FirebaseAPI().updateTitle(recordingID, controller.text);
                 Navigator.pop(context);
               },
             ),
