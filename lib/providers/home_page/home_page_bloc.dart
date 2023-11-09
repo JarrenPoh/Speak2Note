@@ -40,6 +40,9 @@ class HomePageBloc extends ChangeNotifier {
   }
 
   Future deleteEvent(String recordingID) async {
+    int index =
+        list.indexWhere((element) => element['recordingID'] == recordingID);
+    list.removeAt(index);
     events.forEach((date, recordings) {
       recordings
           .removeWhere((recording) => recording.recordingID == recordingID);

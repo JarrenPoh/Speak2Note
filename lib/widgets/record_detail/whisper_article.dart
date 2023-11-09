@@ -53,7 +53,7 @@ class _WhisperArticleState extends State<WhisperArticle> {
   @override
   Widget build(BuildContext context) {
     Color secondColor = Theme.of(context).colorScheme.secondary;
-    Color onPrimary = Theme.of(context).colorScheme.onPrimary;
+    Color onSecondaryColor = Theme.of(context).colorScheme.onSecondary;
     return ValueListenableBuilder(
       valueListenable: widget.whisperBloc.whisperMotifier,
       builder: (context, value, child) {
@@ -126,7 +126,7 @@ class _WhisperArticleState extends State<WhisperArticle> {
                 ),
                 child: Text(
                   '生成文字',
-                  style: TextStyle(color: onPrimary, fontSize: 16),
+                  style: TextStyle(color: onSecondaryColor, fontSize: 16),
                 ),
               ),
               onPressed: () async {
